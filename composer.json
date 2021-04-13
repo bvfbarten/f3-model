@@ -1,0 +1,23 @@
+{
+    "require": {
+        "bcosca/fatfree": "^3.7"
+    },
+    "name": "bvfbarten/f3-model",
+    "description": "Simple model class for f3 framework",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Brady Barten",
+            "email": "bvfbarten@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=7.1.0"
+    },
+    "autoload":{
+        "psr-0":{
+            "F3Model\\":"src/"
+        }
+    }
+}
