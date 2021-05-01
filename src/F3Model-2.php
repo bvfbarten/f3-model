@@ -2,21 +2,17 @@
 
 namespace F3Model;
 
-use \Base;
 use \DB\SQL\Mapper;
 
 class F3Model extends Mapper  {
     public $_table = "";
     public $_db = "";
-    protected $_relations = [];
+    public $_relations = [];
     public function relations() { }
 	public function __construct($db = "", $table = "") {
         $db = $db ?: $this->_db;
-        if (is_string($db)) {
-            $db = Base::instance()->get($db);
-        }
         $table = $table ?: $this->_table;
-		parent::__construct( $db, $table );
+		parent::__construct( \Base::instance()->get($db), $table );
 	}
     public function findRelation($relation, $args = []) {
         return $this->onRelation('find', $relation, $args);
@@ -29,10 +25,7 @@ class F3Model extends Mapper  {
     }
     public function onRelation($action, $relation, $args = []) {
         $f3 = \Base::instance();
-        if (!count($this->_relations)) {
-            $this->_relations = $this->relations();
-        }
-        $relation = $this->_relations[$relation];
+        $relation = $this->relations()[$relation];
         $instance = new $relation[0]; 
         $finalWhere = [[], []];
         $where = (isset($args['where']) ? $args['where'] : []);
