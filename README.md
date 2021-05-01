@@ -3,7 +3,7 @@ F3 Model
 
 F3 Model strives to create lazy loading relations the fatfree way.  It comes with four functions to add to the mapper object.
 
-<code>
+<pre>
     function relations() {
         //relationships goes here
         return [
@@ -21,7 +21,7 @@ F3 Model strives to create lazy loading relations the fatfree way.  It comes wit
             ],
         ];
     }
-</code>
+</pre>
 
 function findRelation('NotFamily') { }
 returns array of NotFamily relationship
