@@ -4,12 +4,14 @@ F3 Model
 F3 Model strives to create lazy loading relations the fatfree way.  It comes with four functions to add to the mapper object.
 
 <pre>
-    function relations() {
-        //relationships goes here
+class UserGroup extends F3Model {
+    public $_db = 'db';
+    public $_table = 'user_group';
+    public function relations() { 
         return [
-            'User' => [ //key used to reference relationship in other functions
-                "User", //object to access
-                ['id = ?', $this->user_id] //where parameters
+            'User' => [
+                "User",
+                ['id = ?', $this->user_id]
             ],
             'Group' => [
                 "Group",
@@ -21,13 +23,25 @@ F3 Model strives to create lazy loading relations the fatfree way.  It comes wit
             ],
         ];
     }
+}
+
+$userGroup = new UserGroup;
+$user = $userGroup->loadRelation('User');
+
 </pre>
 
-function findRelation('NotFamily') { }
+function findRelation($key, $where, $args) { }
+
 returns array of NotFamily relationship
 
-function loadRelation('NotFamily') { }
+$where, gives ability to add additional where parameters to related table in same fashion as f3
+
+$args, allows overriding $args given in initial relations function
+
+function loadRelation($key, $where, $args) { }
+
 returns a single object of NotFamily
 
-function countRelation('NotFamily') { }
+function countRelation($key, $where, $args) { }
+
 returns a count of NotFamily
