@@ -45,3 +45,6 @@ returns a single object of NotFamily
 function countRelation($key, $where, $args) { }
 
 returns a count of NotFamily
+
+function combineFilter($filter, $filter1) { }
+returns an f3 filter combining $filter and $filter1
