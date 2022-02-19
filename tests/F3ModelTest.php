@@ -134,6 +134,38 @@ $family = $user
 
 $test->expect($family->name == 'Family', 'Testing a relation with two bindings');
 
+
+$filters = [
+    [
+	"id > ?",
+	1
+    ],
+    "id != 2",
+    [
+	"id < ? or id = ?",
+	5,
+	5
+    ]
+];
+$expected = [
+    "id > ? and id != 2 and id < ? or id = ?",
+    1,
+    5,
+    5
+];
+
+$result = [];
+foreach($filters as $filter) {
+    $result = $user->combineFilter(
+	$result, 
+	$filter
+    );
+}
+
+$test->expect (json_encode($result) == json_encode($expected), 'combineFilter test');
+
+
+
 print_r($f3->get('db')->log());
 // Display the results; not MVC but let's keep it simple
 foreach ($test->results() as $result) {

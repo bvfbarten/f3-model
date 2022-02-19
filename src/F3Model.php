@@ -40,18 +40,36 @@ class F3Model extends Mapper  {
      *
      */
     public function combineFilter($filter, $filter2) {
-        $finalWhere = [[], []];
+        $finalWhere = [];
         if (is_string($filter)) {
+	    if($filter == "") {
+		return $filter2;
+	    }
             $finalWhere[0][] = $filter;
         } else {
+	    if($filter[0] == "") {
+		return $filter2;
+	    }
             $finalWhere[0][] = array_shift($filter);
-            $finalWhere[1] = $filter;
+	    foreach($filter as $val) {
+		$finalWhere[] = $val;
+
+		print_r(compact('finalWhere'));
+	    }
         }
         if (is_string($filter2)) {
+	    if($filter == "") {
+		return $filter;
+	    }
             $finalWhere[0][] = $filter2;
         } elseif (count($filter2)) {
-            $finalWhere[0][] = array_shift($filter2);
-            $finalWhere[1] = array_merge ($finalWhere[1], $filter2);
+	    if($filter2[0] == "") {
+		return $filter;
+	    }
+	    $finalWhere[0][] = array_shift($filter2);
+             foreach($filter2 as $val) {
+                 $finalWhere[] = $val;
+             }
         }
         $finalWhere[0] = implode(' and ', $finalWhere[0]);
 	return $finalWhere;
