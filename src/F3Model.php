@@ -53,8 +53,6 @@ class F3Model extends Mapper  {
             $finalWhere[0][] = array_shift($filter);
 	    foreach($filter as $val) {
 		$finalWhere[] = $val;
-
-		print_r(compact('finalWhere'));
 	    }
         }
         if (is_string($filter2)) {
