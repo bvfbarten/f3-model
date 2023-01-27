@@ -15,17 +15,17 @@ $f3->set('db',new DB\SQL('sqlite:' . $db));
 
 $f3->get('db')->exec([
     "create table if not exists users ( 
-    id integer primary key,
-    name varchar(255) not null
+	id integer primary key,
+	name varchar(255) not null
 )
 ",
 
-    "create table if not exists groups (
+"create table if not exists groups (
     id integer primary key,
     name varchar(255) not null
 )
 ",
-    "create table if not exists  user_group (
+"create table if not exists  user_group (
     id integer primary key,
     user_id integer not null,
     group_id integer not null
@@ -37,12 +37,12 @@ class User extends F3Model {
     public $_db = 'db';
     public $_table = 'users';
     public function relations() {
-        return [
-            'UserGroup' => [
-                "UserGroup",
-                ['user_id = ?', $this->id]
-            ],
-        ];
+	return [
+	    'UserGroup' => [
+		"UserGroup",
+		['user_id = ?', $this->id]
+	    ],
+	];
     }
 }
 
@@ -50,32 +50,41 @@ class Group extends F3Model {
     public $_db = 'db';
     public $_table = 'groups';
     public function relations() {
-        return [
-            'UserGroup' => [
-                "UserGroup",
-                ['group_id = ?', $this->id]
-            ]
-        ];
+	return [
+	    'UserGroup' => [
+		"UserGroup",
+		['group_id = ?', $this->id]
+	    ],
+	    "UserByName" => [
+		"UserGroup",
+		[
+		    'group_id = 3',
+
+		],
+		//"order" => "user_id desc"
+		"order" => "(select user.name from users as user where user.id = user_id) asc",
+	    ]
+	];
     }
 }
 class UserGroup extends F3Model {
     public $_db = 'db';
     public $_table = 'user_group';
     public function relations() { 
-        return [
-            'User' => [
-                "User",
-                ['id = ?', $this->user_id]
-            ],
-            'Group' => [
-                "Group",
-                ['id = ?', $this->group_id]
-            ],
-            'NotFamily' => [
-                "Group",
-                ['id != ? and name = ?', 3, 'family']
-            ],
-        ];
+	return [
+	    'User' => [
+		"User",
+		['id = ?', $this->user_id]
+	    ],
+	    'Group' => [
+		"Group",
+		['id = ?', $this->group_id]
+	    ],
+	    'NotFamily' => [
+		"Group",
+		['id != ? and name = ?', 3, 'family']
+	    ],
+	];
     }
 }
 
@@ -126,7 +135,7 @@ $test->expect(count($user->findRelation('UserGroup', ['where' => ['id = ?', 1]])
 
 $userGroup = $user->loadRelation('UserGroup');
 $family = $userGroup->loadRelation('NotFamily');
-$test->expect($family->name != 'Family', 'Testing a relation with two bindings');
+$test->expect(!$family, 'Testing a relation with two bindings');
 
 $family = $user
     ->loadRelation('UserGroup', ['where' => ['group_id = ?', 3]])
@@ -164,15 +173,29 @@ foreach($filters as $filter) {
 
 $test->expect (json_encode($result) == json_encode($expected), 'combineFilter test');
 
+$family = (new Group)->load("name = 'Family'");
 
+$users = $family->findRelation('UserByName');
+
+$test->expect($users[0]->name = 'April B', 'User name should be April');
+$test->expect($users[1]->name = 'Brady B', 'User name should be Brady');
+$test->expect($users[2]->name = 'Chart B', 'User name should be Chart');
+
+$users = $family->findRelation('UserByName', [
+    "order" => "(select user.name from users as user where user.id = user_id) desc",
+]);
+
+$test->expect($users[2]->name = 'April B', 'User name should be April');
+$test->expect($users[1]->name = 'Brady B', 'User name should be Brady');
+$test->expect($users[0]->name = 'Chart B', 'User name should be Chart');
 
 print_r($f3->get('db')->log());
 // Display the results; not MVC but let's keep it simple
 foreach ($test->results() as $result) {
     echo $result['text']."\n";
     if ($result['status'])
-        echo 'Pass';
+	echo 'Pass';
     else
-        echo 'Fail ('.$result['source'].')';
+	echo 'Fail ('.$result['source'].')';
     echo "\n";
 }

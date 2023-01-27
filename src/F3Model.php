@@ -47,7 +47,7 @@ class F3Model extends Mapper  {
 	    }
             $finalWhere[0][] = $filter;
         } else {
-	    if($filter[0] == "") {
+	    if(($filter[0] ?? "") == "") {
 		return $filter2;
 	    }
             $finalWhere[0][] = array_shift($filter);
@@ -82,7 +82,15 @@ class F3Model extends Mapper  {
         $where = (isset($args['where']) ? $args['where'] : []);
 	$finalWhere = $this->combineFilter($relation[1], $where); 
 
-        $finalArgs = array_merge($relation, $args);
+	$relationArgs = [];
+	foreach(($relation ?? []) as $key => $value) {
+	    if (is_numeric($key)) {
+		continue;
+	    }
+	    $relationArgs[$key] = $value;
+	}
+	var_dump($relationArgs);
+        $finalArgs = array_merge($relationArgs ?? [], $args);
         return $instance->{$action}($finalWhere, $finalArgs, $f3->get('CACHE_TIMEOUT')); 
     }
 }
