@@ -89,7 +89,6 @@ class F3Model extends Mapper  {
 	    }
 	    $relationArgs[$key] = $value;
 	}
-	var_dump($relationArgs);
         $finalArgs = array_merge($relationArgs ?? [], $args);
         return $instance->{$action}($finalWhere, $finalArgs, $f3->get('CACHE_TIMEOUT')); 
     }
